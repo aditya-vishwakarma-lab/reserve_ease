@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_13_053618) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_13_061432) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "reservations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "time_slot_id", null: false
+    t.integer "party_size"
+    t.string "contact_phone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["time_slot_id"], name: "index_reservations_on_time_slot_id"
+    t.index ["user_id"], name: "index_reservations_on_user_id"
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -21,6 +32,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_13_053618) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "tables", force: :cascade do |t|
+    t.string "name"
+    t.integer "capacity"
+    t.string "area"
+    t.text "features"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "time_slots", force: :cascade do |t|
+    t.bigint "table_id", null: false
+    t.datetime "start_time", null: false
+    t.datetime "end_time", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_id"], name: "index_time_slots_on_table_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -33,5 +62,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_13_053618) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "reservations", "time_slots"
+  add_foreign_key "reservations", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "time_slots", "tables"
 end
