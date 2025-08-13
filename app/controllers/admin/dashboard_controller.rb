@@ -4,6 +4,6 @@ class Admin::DashboardController < Admin::BaseController
                                   .where(time_slots: { start_time: Date.current.beginning_of_day..Date.current.end_of_day })
                                   .includes(:user, :time_slot => :table)
     @total_reservations = Reservation.count
-    @active_time_slots = TimeSlot.where(active: true).count
+    @active_time_slots = TimeSlot.count
   end
 end

@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   resources :tables, only: [:index]
 
   resources :time_slots, only: [:index]
-  resources :reservations, only: [:new, :create]
+  resources :reservations, only: [:index, :new, :create]
 
   # Customer reservations management
   # resources :reservations, only: [:index, :show, :update, :destroy] do
@@ -23,7 +23,7 @@ Rails.application.routes.draw do
 
   # Admin namespace for staff management
   namespace :admin do
-    # root "dashboard#index"
+    root "dashboard#index"
 
     # Reservations management
     resources :reservations, only: [:index, :show, :update, :destroy]

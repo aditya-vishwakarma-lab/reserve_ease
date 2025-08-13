@@ -32,8 +32,8 @@
             <span>Welcome, <%= Current.user.name %>!</span>
 
             <% if Current.user.staff? %>
-              <%# link_to "Dashboard", admin_root_path, style: "color: #3498db; text-decoration: none;" %>
-              <%# link_to "Reservations", admin_reservations_path, style: "color: #3498db; text-decoration: none;" %>
+              <%= link_to "Dashboard", admin_root_path, style: "color: #3498db; text-decoration: none;" %>
+              <%= link_to "Reservations", admin_reservations_path, style: "color: #3498db; text-decoration: none;" %>
               <%= link_to "Tables", admin_tables_path, style: "color: #3498db; text-decoration: none;" %>
             <% else %>
               <% link_to "Browse Tables", root_path, style: "color: #3498db; text-decoration: none;" %>

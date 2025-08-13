@@ -1,0 +1,148 @@
+<div style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="color: #2c3e50;">All Reservations</h1>
+    <div style="display: flex; gap: 15px;">
+      <%= link_to "Dashboard", admin_root_path,
+          style: "background: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;" %>
+      <%# link_to "Export CSV", admin_reservations_path(format: :csv),
+          style: "background: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;" %>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <div style="background: #3498db; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+      <h3 style="margin-bottom: 10px;">Total Reservations</h3>
+      <p style="font-size: 2em; margin: 0;"><%= @reservations.count %></p>
+    </div>
+
+    <div style="background: #27ae60; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+      <h3 style="margin-bottom: 10px;">Today's Bookings</h3>
+      <p style="font-size: 2em; margin: 0;">
+        <%= @reservations.joins(:time_slot).where('DATE(time_slots.start_time) = ?', Date.current).count %>
+      </p>
+    </div>
+
+    <div style="background: #e67e22; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+      <h3 style="margin-bottom: 10px;">Upcoming</h3>
+      <p style="font-size: 2em; margin: 0;">
+        <%= @reservations.joins(:time_slot).where('time_slots.start_time > ?', Time.current).count %>
+      </p>
+    </div>
+
+    <div style="background: #9b59b6; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+      <h3 style="margin-bottom: 10px;">This Week</h3>
+      <p style="font-size: 2em; margin: 0;">
+        <%= @reservations.joins(:time_slot).where('time_slots.start_time >= ?', 1.week.ago).count %>
+      </p>
+    </div>
+  </div>
+
+  <!-- Reservations Table -->
+  <div style="background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; min-width: 1000px;">
+        <thead style="background: #f8f9fa;">
+          <tr>
+            <th style="padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; font-weight: bold;">Date & Time</th>
+            <th style="padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; font-weight: bold;">Customer</th>
+            <th style="padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; font-weight: bold;">Table</th>
+            <th style="padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; font-weight: bold;">Party Size</th>
+            <th style="padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; font-weight: bold;">Contact</th>
+            <th style="padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; font-weight: bold;">Booked</th>
+            <th style="padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; font-weight: bold;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @reservations.each do |reservation| %>
+            <tr style="<%= 'background: #f8f9fa;' if reservation.time_slot.start_time < Time.current %>">
+              <td style="padding: 15px; border-bottom: 1px solid #f1f1f1;">
+                <div style="font-weight: bold; color: #2c3e50;">
+                  <%= reservation.time_slot.start_time.strftime("%m/%d/%Y") %>
+                </div>
+                <div style="color: #666; font-size: 0.9em;">
+                  <%= reservation.time_slot.start_time.strftime("%I:%M %p") %> -
+                  <%= reservation.time_slot.end_time.strftime("%I:%M %p") %>
+                </div>
+                <% if reservation.time_slot.start_time > Time.current %>
+                  <div style="color: #27ae60; font-size: 0.8em; font-weight: bold;">
+                    In <%= distance_of_time_in_words(Time.current, reservation.time_slot.start_time) %>
+                  </div>
+                <% elsif reservation.time_slot.end_time < Time.current %>
+                  <div style="color: #666; font-size: 0.8em;">Completed</div>
+                <% else %>
+                  <div style="color: #e67e22; font-size: 0.8em; font-weight: bold;">Currently dining</div>
+                <% end %>
+              </td>
+
+              <td style="padding: 15px; border-bottom: 1px solid #f1f1f1;">
+                <div style="font-weight: bold; color: #2c3e50;">
+                  <%= reservation.user.name %>
+                </div>
+                <div style="color: #666; font-size: 0.9em;">
+                  <%= reservation.user.email_address %>
+                </div>
+              </td>
+
+              <td style="padding: 15px; border-bottom: 1px solid #f1f1f1;">
+                <div style="font-weight: bold; color: #2c3e50;">
+                  <%= reservation.time_slot.table.name %>
+                </div>
+                <div style="color: #666; font-size: 0.9em;">
+                  📍 <%= reservation.time_slot.table.area %>
+                </div>
+                <div style="color: #666; font-size: 0.8em;">
+                  Capacity: <%= reservation.time_slot.table.capacity %>
+                </div>
+              </td>
+
+              <td style="padding: 15px; border-bottom: 1px solid #f1f1f1;">
+                <div style="font-weight: bold; color: #2c3e50; font-size: 1.1em;">
+                  👥 <%= reservation.party_size %>
+                </div>
+                <div style="color: #666; font-size: 0.8em;">
+                  <%= 'person'.pluralize(reservation.party_size) %>
+                </div>
+              </td>
+
+              <td style="padding: 15px; border-bottom: 1px solid #f1f1f1;">
+                <div style="font-weight: bold; color: #2c3e50;">
+                  📞 <%= reservation.contact_phone %>
+                </div>
+              </td>
+
+              <td style="padding: 15px; border-bottom: 1px solid #f1f1f1;">
+                <div style="color: #666; font-size: 0.9em;">
+                  <%= reservation.created_at.strftime("%m/%d/%Y") %>
+                </div>
+                <div style="color: #666; font-size: 0.8em;">
+                  <%= reservation.created_at.strftime("%I:%M %p") %>
+                </div>
+              </td>
+
+              <td style="padding: 15px; border-bottom: 1px solid #f1f1f1;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <%= link_to "View", admin_reservation_path(reservation),
+                      style: "background: #3498db; color: white; padding: 4px 8px; text-decoration: none; border-radius: 3px; font-size: 0.75em; text-align: center;" %>
+
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <% if @reservations.empty? %>
+    <div style="text-align: center; padding: 80px 20px; color: #666;">
+      <div style="font-size: 4em; margin-bottom: 20px;">📅</div>
+      <h2 style="color: #2c3e50; margin-bottom: 15px;">No Reservations Found</h2>
+      <p style="margin-bottom: 30px; font-size: 1.1em;">
+        No reservations match your current filters. Try adjusting the date or status filters.
+      </p>
+      <%= link_to "Clear Filters", admin_reservations_path,
+          style: "background: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;" %>
+    </div>
+  <% end %>
+</div>
