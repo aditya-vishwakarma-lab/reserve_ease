@@ -1,0 +1,25 @@
+<!-- app/views/tables/index.html.erb -->
+<h1>Available Time Slots</h1>
+
+<% if @available_time_slots.any? %>
+  <div class="time-slots">
+    <% @available_time_slots.each do |time_slot| %>
+      <div class="time-slot-card" style="border: 1px solid #ddd; padding: 15px; margin: 10px 0;">
+        <h3><%= time_slot.table.name %> - <%= time_slot.table.area.capitalize %></h3>
+
+        <p><strong>Date:</strong> <%= time_slot.start_time.strftime("%B %d, %Y") %></p>
+        <p><strong>Time:</strong> <%= time_slot.start_time.strftime("%I:%M %p") %> - <%= time_slot.end_time.strftime("%I:%M %p") %></p>
+        <p><strong>Duration:</strong> <%= distance_of_time_in_words(time_slot.start_time, time_slot.end_time) %></p>
+        <p><strong>Capacity:</strong> Up to <%= time_slot.table.capacity %> people</p>
+
+        <% if time_slot.table.features.present? %>
+          <p><strong>Features:</strong> <%= time_slot.table.features %></p>
+        <% end %>
+
+        <%= link_to "Book This Slot", new_reservation_path(time_slot_id: time_slot.id), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p>No available time slots at the moment.</p>
+<% end %>

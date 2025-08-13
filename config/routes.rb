@@ -4,16 +4,48 @@ Rails.application.routes.draw do
   get "sign_up", to: "registrations#new"
   post "sign_up", to: "registrations#create"
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # Root route - browse available tables/slots
+  root "tables#index"
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Customer-facing routes
+  resources :tables, only: [:index]
+
+  resources :time_slots, only: [:index]
+  resources :reservations, only: [:new, :create]
+
+  # Customer reservations management
+  # resources :reservations, only: [:index, :show, :update, :destroy] do
+  #   resources :reviews, only: [:new, :create, :update]
+  # end
+
+  # Admin namespace for staff management
+  namespace :admin do
+    # root "dashboard#index"
+
+    # Reservations management
+    resources :reservations, only: [:index, :show, :update, :destroy]
+
+    # Dashboard and reporting
+    # resources :dashboard, only: [:index]
+
+    # Tables management (if needed for future)
+    resources :tables do
+      resources :time_slots
+    end
+  end
+
+  # API routes (if needed for AJAX/Stimulus)
+  # namespace :api do
+  #   namespace :v1 do
+  #     resources :time_slots, only: [:index] do
+  #       collection do
+  #         get :available
+  #       end
+  #     end
+  #     resources :reservations, only: [:create, :update, :destroy]
+  #   end
+  # end
 end

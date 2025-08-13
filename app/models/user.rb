@@ -1,9 +1,10 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :reservations, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
-  enum role: { customer: 0, staff: 1 }
+  enum :role, [:customer, :staff]
 
   STAFF_EMAILS = [
     'admin@restaurant.com',

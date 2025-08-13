@@ -6,6 +6,8 @@ class CreateTimeSlots < ActiveRecord::Migration[8.0]
       t.datetime :end_time, null: false
 
       t.timestamps
+
+      t.references :table, null: false, foreign_key: true
     end
   end
 end

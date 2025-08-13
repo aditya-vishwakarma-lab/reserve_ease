@@ -1,0 +1,163 @@
+<!-- app/views/reservations/new.html.erb -->
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="color: #2c3e50;">Make Reservation</h1>
+    <%= link_to "← Browse Tables", root_path,
+        style: "color: #3498db; text-decoration: none;" %>
+  </div>
+
+  <!-- Time Slot Summary -->
+  <div style="background: #e3f2fd; border: 1px solid #3498db; border-radius: 8px; padding: 25px; margin-bottom: 25px;">
+    <h2 style="color: #2c3e50; margin-bottom: 20px;"><%= @time_slot.table.name %> - <%= @time_slot.table.area.capitalize %></h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+      <div>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>📅 Date:</strong> <%= @time_slot.start_time.strftime("%B %d, %Y") %></p>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>🕐 Time:</strong> <%= @time_slot.start_time.strftime("%I:%M %p") %> - <%= @time_slot.end_time.strftime("%I:%M %p") %></p>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>⏱️ Duration:</strong> <%= distance_of_time_in_words(@time_slot.start_time, @time_slot.end_time) %></p>
+      </div>
+      <div>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>👥 Table Capacity:</strong> Up to <%= @time_slot.table.capacity %> people</p>
+        <% if @time_slot.table.features.present? %>
+          <p style="margin: 8px 0; color: #2c3e50;"><strong>✨ Features:</strong> <%= @time_slot.table.features %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Check if still available -->
+  <% if @time_slot.reservation.present? %>
+    <div style="background: #ffebee; border: 1px solid #e74c3c; border-radius: 8px; padding: 25px; margin-bottom: 25px;">
+      <h3 style="color: #e74c3c; margin-bottom: 15px;">❌ Sorry, This Slot is No Longer Available</h3>
+      <p style="color: #666; margin-bottom: 20px;">Someone else has already booked this time slot.</p>
+      <%= link_to "← Find Another Slot", root_path,
+          style: "background: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;" %>
+    </div>
+  <% else %>
+    <!-- Booking Form -->
+    <div style="background: #f1f8e9; border: 1px solid #27ae60; border-radius: 8px; padding: 25px; margin-bottom: 25px;">
+      <h3 style="color: #27ae60; margin-bottom: 20px;">✓ Available - Complete Your Reservation</h3>
+
+      <%= form_with model: @reservation, local: true,
+          style: "display: flex; flex-direction: column; gap: 20px;" do |form| %>
+        <% if @reservation.errors.any? %>
+          <div style="background: #ffebee; border: 1px solid #e74c3c; border-radius: 5px; padding: 15px;">
+            <h4 style="color: #e74c3c; margin: 0 0 10px 0;">Please fix the following errors:</h4>
+            <ul style="margin: 0; padding-left: 20px; color: #e74c3c;">
+              <% @reservation.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div style="display: flex; flex-direction: column;">
+          <%= form.label :party_size, "Number of People *",
+              style: "font-weight: bold; color: #2c3e50; margin-bottom: 5px;" %>
+          <%= form.number_field :party_size,
+              required: true,
+              min: 1,
+              max: @time_slot.table.capacity,
+              placeholder: "Enter number of guests",
+              style: "padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" %>
+          <small style="color: #666; margin-top: 5px;">Maximum <%= @time_slot.table.capacity %> people for this table</small>
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+          <%= form.label :contact_phone, "Contact Phone *",
+              style: "font-weight: bold; color: #2c3e50; margin-bottom: 5px;" %>
+          <%= form.telephone_field :contact_phone,
+              required: true,
+              placeholder: "Your phone number",
+              style: "padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" %>
+          <small style="color: #666; margin-top: 5px;">We'll use this to contact you about your reservation</small>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Booking Summary -->
+    <div style="background: white; border: 1px solid #f39c12; border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+      <h4 style="color: #2c3e50; margin-bottom: 20px;">📋 Reservation Summary</h4>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+          <p style="margin: 8px 0; color: #2c3e50;"><strong>Customer:</strong> <%= Current.user.name %></p>
+          <p style="margin: 8px 0; color: #666; font-size: 0.9em;"><%= Current.user.email_address %></p>
+          <p style="margin: 8px 0; color: #2c3e50;"><strong>Table:</strong> <%= @time_slot.table.name %></p>
+        </div>
+        <div>
+          <p style="margin: 8px 0; color: #2c3e50;"><strong>When:</strong> <%= @time_slot.start_time.strftime("%A, %B %d") %></p>
+          <p style="margin: 8px 0; color: #2c3e50;"><strong>Time:</strong> <%= @time_slot.start_time.strftime("%I:%M %p") %></p>
+          <p style="margin: 8px 0; color: #2c3e50;" id="party-summary"><strong>Party Size:</strong> <span id="party-count">1</span> <span id="party-word">person</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+      <%= form_with model: @reservation, local: true do |form| %>
+        <%= form.hidden_field :time_slot_id, value: @time_slot.id %>
+        <!-- Hidden fields to preserve form data -->
+        <div style="display: none;">
+          <%= form.number_field :party_size, id: "hidden_party_size" %>
+          <%= form.telephone_field :contact_phone, id: "hidden_contact_phone" %>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+          <%= form.submit "Confirm Reservation",
+              style: "background: #27ae60; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;" %>
+
+          <%= link_to "← Back", root_path,
+              style: "background: #95a5a6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;" %>
+
+          <%= link_to "Cancel", root_path,
+              style: "color: #e74c3c; padding: 15px 30px; text-decoration: none; border: 1px solid #e74c3c; border-radius: 5px; font-size: 16px;" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Tips Section -->
+  <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 30px; border-left: 4px solid #3498db;">
+    <h3 style="color: #2c3e50; margin-bottom: 15px;">💡 Reservation Tips</h3>
+    <ul style="color: #666; line-height: 1.6;">
+      <li>Please arrive on time - we hold tables for 15 minutes past reservation time</li>
+      <li>For parties larger than 6, please call us directly</li>
+      <li>Cancellations can be made up to 2 hours before your reservation</li>
+      <li>Special dietary needs? Let us know in the special requests section</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const partySizeInput = document.querySelector('#reservation_party_size');
+    const contactPhoneInput = document.querySelector('#reservation_contact_phone');
+
+    const partyCountSpan = document.querySelector('#party-count');
+
+    // Hidden form fields for submission
+    const hiddenPartySize = document.querySelector('#hidden_party_size');
+    const hiddenContactPhone = document.querySelector('#hidden_contact_phone');
+
+    // Update summary when party size changes
+    if (partySizeInput && partyCountSpan) {
+      const partyWordSpan = document.querySelector('#party-word');
+      partySizeInput.addEventListener('input', function() {
+        const partySize = parseInt(this.value) || 1;
+        partyCountSpan.textContent = partySize;
+        if (partyWordSpan) {
+          partyWordSpan.textContent = partySize === 1 ? 'person' : 'people';
+        }
+        // Update hidden field
+        if (hiddenPartySize) hiddenPartySize.value = partySize;
+      });
+    }
+
+    // Sync form fields with hidden fields
+    if (contactPhoneInput && hiddenContactPhone) {
+      contactPhoneInput.addEventListener('input', function() {
+        hiddenContactPhone.value = this.value;
+      });
+    }
+  });
+</script>

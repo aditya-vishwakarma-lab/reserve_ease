@@ -7,6 +7,7 @@ class RegistrationsController < ApplicationController
 
   def create
     @user = User.new(user_params)
+    @user.role = User.staff_email?(user_params[:email_address]) ? 'staff' : 'customer'
     if @user.save
       start_new_session_for(@user) # sign in the user after registration
       redirect_to root_path, notice: "Welcome to the app!"

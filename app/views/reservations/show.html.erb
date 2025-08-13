@@ -1,0 +1,22 @@
+<!-- app/views/reservations/show.html.erb -->
+<h1>Reservation Confirmation</h1>
+
+<div class="reservation-details" style="border: 1px solid #28a745; padding: 20px; margin: 20px 0; background: #f8fff9;">
+  <h2 style="color: #28a745;">✓ Reservation Confirmed</h2>
+
+  <p><strong>Reservation ID:</strong> #<%= @reservation.id %></p>
+  <p><strong>Table:</strong> <%= @reservation.time_slot.table.name %></p>
+  <p><strong>Area:</strong> <%= @reservation.time_slot.table.area.capitalize %></p>
+  <p><strong>Date:</strong> <%= @reservation.time_slot.start_time.strftime("%B %d, %Y") %></p>
+  <p><strong>Time:</strong> <%= @reservation.time_slot.start_time.strftime("%I:%M %p") %> - <%= @reservation.time_slot.end_time.strftime("%I:%M %p") %></p>
+  <p><strong>Party Size:</strong> <%= @reservation.party_size %> <%= 'person'.pluralize(@reservation.party_size) %></p>
+  <p><strong>Contact Phone:</strong> <%= @reservation.contact_phone %></p>
+
+
+  <p><strong>Booked On:</strong> <%= @reservation.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+</div>
+
+<div class="actions">
+  <%= link_to "My Reservations", reservations_path, class: "btn btn-primary" %>
+  <%= link_to "Make Another Reservation", root_path, class: "btn btn-secondary" %>
+</div>
