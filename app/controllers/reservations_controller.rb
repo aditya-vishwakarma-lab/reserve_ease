@@ -14,6 +14,10 @@ class ReservationsController < ApplicationController
     @reservation = Current.user.reservations.find(params[:id])
   end
 
+  def edit
+    @reservation = Current.user.reservations.find(params[:id])
+  end
+
   def create
     @reservation = Current.user.reservations.new(reservation_params)
 
@@ -26,8 +30,7 @@ class ReservationsController < ApplicationController
     if @reservation.save
       redirect_to @reservation, notice: 'Reservation was successfully created!'
     else
-      @table = @time_slot.table
-      render 'tables/show', status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -37,7 +40,7 @@ class ReservationsController < ApplicationController
     if @reservation.update(reservation_params)
       redirect_to @reservation, notice: 'Reservation was successfully updated!'
     else
-      render :show, status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
   end
 

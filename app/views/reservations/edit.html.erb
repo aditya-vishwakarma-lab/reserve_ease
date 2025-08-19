@@ -1,0 +1,78 @@
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="color: #2c3e50;">Edit Reservation</h1>
+    <%= link_to "← My Reservations", reservations_path,
+        style: "color: #3498db; text-decoration: none;" %>
+  </div>
+
+  <!-- Reservation Details -->
+  <div style="background: #e3f2fd; border: 1px solid #3498db; border-radius: 8px; padding: 25px; margin-bottom: 25px;">
+    <h2 style="color: #2c3e50; margin-bottom: 20px;">
+      <%= @reservation.time_slot.table.name %> - <%= @reservation.time_slot.table.area.capitalize %>
+    </h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+      <div>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>📅 Date:</strong> <%= @reservation.time_slot.start_time.strftime("%B %d, %Y") %></p>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>🕐 Time:</strong> <%= @reservation.time_slot.start_time.strftime("%I:%M %p") %> - <%= @reservation.time_slot.end_time.strftime("%I:%M %p") %></p>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>⏱️ Duration:</strong> <%= distance_of_time_in_words(@reservation.time_slot.start_time, @reservation.time_slot.end_time) %></p>
+      </div>
+      <div>
+        <p style="margin: 8px 0; color: #2c3e50;"><strong>👥 Table Capacity:</strong> Up to <%= @reservation.time_slot.table.capacity %> people</p>
+        <% if @reservation.time_slot.table.features.present? %>
+          <p style="margin: 8px 0; color: #2c3e50;"><strong>✨ Features:</strong> <%= @reservation.time_slot.table.features %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <div style="background: #fdfdfd; border: 1px solid #ccc; border-radius: 8px; padding: 25px; margin-bottom: 25px;">
+    <h3 style="color: #2c3e50; margin-bottom: 20px;">Update Your Reservation</h3>
+
+    <%= form_with model: @reservation, local: true,
+        style: "display: flex; flex-direction: column; gap: 20px;" do |form| %>
+
+      <% if @reservation.errors.any? %>
+        <div style="background: #ffebee; border: 1px solid #e74c3c; border-radius: 5px; padding: 15px;">
+          <h4 style="color: #e74c3c; margin: 0 0 10px 0;">Please fix the following errors:</h4>
+          <ul style="margin: 0; padding-left: 20px; color: #e74c3c;">
+            <% @reservation.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div style="display: flex; flex-direction: column;">
+        <%= form.label :party_size, "Number of People *",
+            style: "font-weight: bold; color: #2c3e50; margin-bottom: 5px;" %>
+        <%= form.number_field :party_size,
+            required: true,
+            min: 1,
+            max: @reservation.time_slot.table.capacity,
+            value: @reservation.party_size,
+            style: "padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" %>
+        <small style="color: #666; margin-top: 5px;">Maximum <%= @reservation.time_slot.table.capacity %> people</small>
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
+        <%= form.label :contact_phone, "Contact Phone *",
+            style: "font-weight: bold; color: #2c3e50; margin-bottom: 5px;" %>
+        <%= form.telephone_field :contact_phone,
+            required: true,
+            value: @reservation.contact_phone,
+            style: "padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" %>
+        <small style="color: #666; margin-top: 5px;">We’ll use this to contact you about updates</small>
+      </div>
+
+      <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+        <%= form.submit "Save Changes",
+            style: "background: #27ae60; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;" %>
+
+        <%= link_to "Cancel", reservations_path,
+            style: "background: #95a5a6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;" %>
+      </div>
+    <% end %>
+  </div>
+</div>

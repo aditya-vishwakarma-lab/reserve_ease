@@ -14,8 +14,7 @@ Rails.application.routes.draw do
   resources :tables, only: [:index]
 
   resources :time_slots, only: [:index]
-  resources :reservations, only: [:index, :new, :create]
-
+  resources :reservations
   # Customer reservations management
   # resources :reservations, only: [:index, :show, :update, :destroy] do
   #   resources :reviews, only: [:new, :create, :update]
