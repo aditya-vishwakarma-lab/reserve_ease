@@ -41,9 +41,8 @@
                     style: "background: #3498db; color: white; padding: 6px 12px; text-decoration: none; border-radius: 3px; font-size: 0.8em;" %>
                 <%= link_to "Edit", edit_admin_table_path(table),
                     style: "background: #f39c12; color: white; padding: 6px 12px; text-decoration: none; border-radius: 3px; font-size: 0.8em;" %>
-                <%= link_to "Delete", admin_table_path(table), method: :delete,
-                    style: "background: #e74c3c; color: white; padding: 6px 12px; text-decoration: none; border-radius: 3px; font-size: 0.8em;",
-                    data: { confirm: "Are you sure? This will also delete all time slots." } %>
+                <%= link_to "Delete", admin_table_path(table), data: {turbo_method: :delete, turbo_confirm: "Are you sure? This will also delete all time slots." },
+                    style: "background: #e74c3c; color: white; padding: 6px 12px; text-decoration: none; border-radius: 3px; font-size: 0.8em;" %>
               </div>
             </td>
           </tr>

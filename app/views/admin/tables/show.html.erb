@@ -95,9 +95,13 @@
                 <td style="padding: 12px; border-bottom: 1px solid #f1f1f1;">
                   <div style="display: flex; gap: 5px;">
                     <% unless time_slot.reservation %>
-                      <%= link_to "Delete", admin_table_time_slot_path(table_id: @table.id, time_slot_id: time_slot.id), method: :delete,
-                          style: "background: #e74c3c; color: white; padding: 4px 8px; text-decoration: none; border-radius: 3px; font-size: 0.7em;",
-                          data: { confirm: "Delete this time slot?" } %>
+                      <%= link_to "Delete",
+                          admin_table_time_slot_path(@table, time_slot),
+                          data: {
+                            turbo_method: :delete,
+                            turbo_confirm: "Delete this time slot?"
+                          },
+                          style: "background: #e74c3c; color: white; padding: 4px 8px; text-decoration: none; border-radius: 3px; font-size: 0.7em;" %>
                     <% end %>
                   </div>
                 </td>
