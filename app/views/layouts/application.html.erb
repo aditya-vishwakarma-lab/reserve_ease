@@ -36,7 +36,7 @@
               <%= link_to "Reservations", admin_reservations_path, style: "color: #3498db; text-decoration: none;" %>
               <%= link_to "Tables", admin_tables_path, style: "color: #3498db; text-decoration: none;" %>
             <% else %>
-              <% link_to "Browse Tables", root_path, style: "color: #3498db; text-decoration: none;" %>
+              <%= link_to "Browse Tables", root_path, style: "color: #3498db; text-decoration: none;" %>
               <%= link_to "My Reservations", reservations_path, style: "color: #3498db; text-decoration: none;" %>
             <% end %>
 
